@@ -1,4 +1,7 @@
 # pip install ollama termcolor
+# This model is better at generating roleplaying and natural texting
+# It is best at following the System. So it can be used for other purposes as well
+# Please change the file path to your own file path
 
 import ollama
 from time import time # for counting time it takes to generate
@@ -6,7 +9,7 @@ from termcolor import colored # make it look nicer
 
 
 modelfile = '''
-FROM "/Users/haolunchong/VSCODE/Youtube_Chatbot/silicon-maid-7b.Q4_K_M.gguf"
+FROM "INSERT YOUR FILE PATH HERE"
 
 TEMPLATE """
 <|im_start|>system
