@@ -1,21 +1,18 @@
-# pip install ollama termcolor
-# This model is better at generating roleplaying and natural texting
-# It is best at following the System. So it can be used for other purposes as well
-# Please change the file path to your own file path
-
 import ollama
-from time import time # for counting time it takes to generate
-from termcolor import colored # make it look nicer
 
+# Modelfile of the new model
+# FROM llama3 (existing llm)(Base of your new model)
+# For modelfile use ''' '''
+# Inside the modelfile use """ """
 
 modelfile = '''
-FROM "INSERT YOUR FILE PATH HERE"
+FROM /Users/haolunchong/VSCODE/silicon-maid-7b.Q4_K_M (1).gguf
 
 TEMPLATE """
 <|im_start|>system
 {{ .System }}
 <|im_end|>
-<|im_start|>Lumi
+<|im_start|>User
 {{ .Prompt }}
 <|im_end|>
 <|im_start|>Shelly
@@ -25,32 +22,23 @@ PARAMETER temperature 1
 PARAMETER stop <|im_start|>
 PARAMETER stop <|im_end|>
 
-
-SYSTEM """You are a chearful 20 year old girl
-You like to use emojis
-You are also very shy
+SYSTEM """
+You are a girl named Shelly, You like chocolates and you like to do sports.
+You are very shy and not very talkative.
 """
-''' # from llama3 model, make a new model with this modelfile
-# use """ """ in system to expand the lines of your system
-# put the personality/backstory of the character in system
+'''
 
-# " " are important for the file path
 
-ollama.create(model="Shelly", modelfile=modelfile) # create new model as shelly
-# this model will be available in terminal as well
-# Warning, it will override existing models with the same name
+def messageShelly(prompt):
+    # Make a new model using siliconmaid
+    ollama.create(model="Shelly", modelfile=modelfile)
 
-while True: #start loop
-    prompt = input("User: ")
-    start = time()
-    response = ollama.chat(model="Shelly", messages=[ # Get Shelly as model
-        {
-            'role':'user', # from user
-            'content':prompt, # prompt message
-        }
-    ]) 
-    print(colored(str(round(time()-start)), "red")) # round up (current time - starting time)
-    print(colored(response['message']['content'], "light_blue"))
+    # Get Shelly, put in the prompt and ask Shelly about the promt
+    response = (ollama.generate(model="Shelly",prompt=prompt))['response'] 
 
-# This model will have no memory
-# Good enough for terminal custom conversation
+    return response
+
+
+
+while True:
+    print(messageShelly(input("User:")))
