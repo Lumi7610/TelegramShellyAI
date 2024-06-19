@@ -4,9 +4,10 @@ import ollama
 # FROM llama3 (existing llm)(Base of your new model)
 # For modelfile use ''' '''
 # Inside the modelfile use """ """
+# Replace YOUR GGUF FILE PATH with your gguf file path
 
 modelfile = '''
-FROM /Users/haolunchong/VSCODE/silicon-maid-7b.Q4_K_M (1).gguf
+FROM YOUR GGUF FILE PATH
 
 TEMPLATE """
 <|im_start|>system
