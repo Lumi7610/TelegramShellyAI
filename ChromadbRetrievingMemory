@@ -1,0 +1,94 @@
+import ollama
+import chromadb # vector database for memory storage
+from termcolor import colored# More readable
+
+path = "AI_memory" # foldername for the vector database
+
+client = chromadb.PersistentClient(path=path) # define and open folder path
+client.heartbeat() # start chromadb
+collection = client.get_or_create_collection("My_collection") # Get or create collection with name "My_collection"
+
+
+
+
+# Modelfile of the new model
+# FROM llama3 (existing llm)(Base of your new model)
+# For modelfile use ''' '''
+# Inside the modelfile use """ """
+# Replace YOUR GGUF FILE PATH with your gguf file path
+
+
+
+def messageShelly(prompt):
+
+    modelfile = '''
+FROM /Users/haolunchong/VSCODE/YoutubeShelly/silicon-maid-7b.Q4_K_M (1).gguf
+
+
+TEMPLATE """
+<|im_start|>system
+{{ .System }}
+<|im_end|>
+''' + get_latest_messages() +'''
+<|im_start|>User
+{{ .Prompt }}
+<|im_end|>
+<|im_start|>Shelly
+"""
+
+PARAMETER temperature 1
+PARAMETER stop <|im_start|>
+PARAMETER stop <|im_end|>
+
+SYSTEM """
+You are a girl named Shelly, You like chocolates and you like to do sports.
+You are very shy and not very talkative.
+"""
+'''
+    print(colored(modelfile, "light_green"))
+    collection.add(
+        documents=[prompt], # Save prompt(user message) in documents
+        metadatas=[{"user": "User"}], # save "User" as username of the sender
+        ids=[str(collection.count() + 1)], # Save id as new id
+    )
+
+
+
+    # Make a new model using siliconmaid
+    ollama.create(model="Shelly", modelfile=modelfile)
+
+    # Get Shelly, put in the prompt and ask Shelly about the promt
+    response = (ollama.generate(model="Shelly",prompt=prompt))['response'] 
+
+    collection.add(
+        documents=[response], # Save response(AI output) in documents
+        metadatas=[{"user": "Shelly"}], # save "Shelly" as username of the sender
+        ids=[str(collection.count() + 1)], # Save id as new id
+    )
+
+
+    return response
+
+
+# function to get latest messages from chromadb
+def get_latest_messages():
+    messageCollection = ""
+    count = int(collection.count()) # Get the total number of messages (Latest message id)
+    id_list = [str(count -4),str(count -3),str(count -2),str(count -1)] # Create list of 5 most recent id's
+    for i in id_list:
+        try:
+            collect = collection.get(i) # Collect the collection of the message
+            message = (collect["documents"])[0] # Get the message 
+            user = (collect["metadatas"])[0].get("user") # Get the username (User or Shelly)
+            messageCollection = f"""{messageCollection} \n<|im_start|>{user} \n{message}\n<|im_end|>\n """
+        except:
+            pass
+    return messageCollection
+
+
+
+
+while True:
+    print(colored(messageShelly(input("User:")), "light_blue"))
+
+
