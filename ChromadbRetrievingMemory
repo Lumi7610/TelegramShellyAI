@@ -22,7 +22,7 @@ collection = client.get_or_create_collection("My_collection") # Get or create co
 def messageShelly(prompt):
 
     modelfile = '''
-FROM /Users/haolunchong/VSCODE/YoutubeShelly/silicon-maid-7b.Q4_K_M (1).gguf
+FROM YOUR GGUF FILE PATH
 
 
 TEMPLATE """
